@@ -1,9 +1,9 @@
 from agents import Runner
-from simple_agents.agents import weather_agent
+from simple_agents.agents import agent
 import asyncio
 
 async def main():
-    output = await Runner.run(starting_agent=weather_agent , input=input('Enter a weather query: '))
+    output = await Runner.run(starting_agent=agent , input=input('Enter your query: '))
     print(output.final_output)
 
 asyncio.run(main())

@@ -6,6 +6,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 API_KEY = os.getenv("openweathermap")  # make sure this is valid
+@function_tool(
+    name_override="add_numbers", description_override="add two numbers"
+)
+def add_numbers(a: int, b: int) -> int:
+    """Add two numbers."""
+    print("addition tool fired 🔥")
+    return a + b
+
 
 @function_tool(name_override="check_weather", description_override="Get current weather info")
 def check_weather(city: str) -> str:
