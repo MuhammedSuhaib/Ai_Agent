@@ -3,10 +3,9 @@
 # ✅ Pydantic is used for input validation and schema generation.
 from pydantic import BaseModel
 
-class SubtractInput(BaseModel):
-    a: int
-    b: int
-
+class WeatherInput(BaseModel):
+    city: str
+    
 class Guardrail_Output(BaseModel):
     is_querry_about_hotel_laurel:bool
     is_querry_related_to_account_and_tax_of_hotel_laurel:bool

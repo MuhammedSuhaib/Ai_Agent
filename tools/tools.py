@@ -1,19 +1,34 @@
 # tools\tools.py
 from agents import function_tool
-from schemas.schemas import SubtractInput
+from schemas.schemas import WeatherInput
+import os
+import requests
+from dotenv import load_dotenv
+load_dotenv()
+WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 
 
-@function_tool(
-    name_override="subtract_numbers", description_override="Subtract two numbers"
-)
-def subtract_numbers(Sub: SubtractInput) -> int:
-    """Subtract two numbers."""
-    print("Subtracting tool fired 🔥")
-    return f"Sub.a - Sub.b: {Sub.a - Sub.b}"
+@function_tool(name_override="check_weather", description_override="Get current weather info")
+def check_weather(city: WeatherInput) -> str:
+    """Fetch current weather from WeatherAPI."""
+    print("check_weather fired ==🔥")
 
+    if not WEATHER_API_KEY:
+        return "Weather API key not set."
 
-@function_tool(name_override="WebSearchTool", description_override="Search the web")
-def WebSearchTool(query: str) -> str:
-    """Search the web."""
-    print("WebSearchTool fired ==🔥")
-    return f"Results for '{query}': ..."
+    url = f"http://api.weatherapi.com/v1/current.json?key={WEATHER_API_KEY}&q={city}"
+    try:
+        response = requests.get(url, timeout=5)
+        data = response.json()
+
+        if "error" in data:
+            return f"API Error: {data['error'].get('message', 'Unknown error')}"
+
+        location = data["location"]["name"]
+        country = data["location"]["country"]
+        temp_c = data["current"]["temp_c"]
+        condition = data["current"]["condition"]["text"]
+        return f"Weather in {location}, {country}: {temp_c}°C, {condition}"
+
+    except Exception as e:
+        return f"Failed to fetch weather: {e}"
