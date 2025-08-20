@@ -1,34 +1,25 @@
 # tools\tools.py
 from agents import function_tool
-from schemas.schemas import WeatherInput
 import os
 import requests
 from dotenv import load_dotenv
-load_dotenv()
-WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 
+load_dotenv()
+API_KEY = os.getenv("openweathermap")  # make sure this is valid
 
 @function_tool(name_override="check_weather", description_override="Get current weather info")
-def check_weather(city: WeatherInput) -> str:
-    """Fetch current weather from WeatherAPI."""
+def check_weather(city: str) -> str:
+    """Fetch current weather from OpenWeatherMap."""
     print("check_weather fired ==🔥")
+    url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
 
-    if not WEATHER_API_KEY:
-        return "Weather API key not set."
-
-    url = f"http://api.weatherapi.com/v1/current.json?key={WEATHER_API_KEY}&q={city}"
     try:
-        response = requests.get(url, timeout=5)
-        data = response.json()
+        res = requests.get(url, timeout=5)
+        data = res.json()
 
-        if "error" in data:
-            return f"API Error: {data['error'].get('message', 'Unknown error')}"
-
-        location = data["location"]["name"]
-        country = data["location"]["country"]
-        temp_c = data["current"]["temp_c"]
-        condition = data["current"]["condition"]["text"]
-        return f"Weather in {location}, {country}: {temp_c}°C, {condition}"
-
+        if res.status_code == 200:
+            return f"Weather in {data['name']}, {data['sys']['country']}: {data['main']['temp']}°C, {data['weather'][0]['description']}"
+        else:
+            return f"Error {res.status_code}: {data.get('message', 'Unknown error')}"
     except Exception as e:
         return f"Failed to fetch weather: {e}"
