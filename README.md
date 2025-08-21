@@ -16,3 +16,6 @@ I do it in a modular form:
 Here I implement agent-level config, meaning configs are done in the Agent class so we can give agents different configs.   
 I use `Runner.run`, which is async, so it requires extra code for `async/await` and `asyncio`.  
 
+# Logs
+
+![img](math.png)
